@@ -1,0 +1,44 @@
+---
+# tasks file for snelson_redhat.ocp_offline.registry
+
+- set_fact:
+    ansible_facts:
+      pkg_mgr: yum
+
+- name: Install Docker
+  yum:
+    name: docker
+    state: present
+  changed_when: true
+  tags:
+    - never
+    - yum
+    - docker
+
+- name: Install Container Registry
+  yum:
+    name: docker-distribution
+    state: present
+  changed_when: true
+  tags:
+    - never
+    - yum
+    - container
+
+- name: Ensure Container Registry is on IPv4
+  replace:
+    path: /etc/docker-distribution/registry/config.yml
+    regexp: '^    addr\: \:5000'
+    replace: "    addr: {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:5000"
+
+- name: Start Docker
+  service:
+    name: docker
+    enabled: true
+    state: started
+
+- name: Start Container Registry
+  service:
+    name: docker-distribution
+    enabled: true
+    state: started
