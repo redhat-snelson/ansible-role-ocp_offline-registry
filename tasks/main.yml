@@ -1,7 +1,8 @@
 ---
 # tasks file for snelson_redhat.ocp_offline.registry
 
-- set_fact:
+- name: Set package manager to Yum
+  set_fact:
     ansible_facts:
       pkg_mgr: yum
 
